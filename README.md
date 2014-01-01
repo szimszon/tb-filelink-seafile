@@ -1,5 +1,5 @@
-tb-filelink-seafile
-===================
+SeaFile for Filelink in Thunderbird
+===================================
 
 Adds the possibility to use a SeaFile store for Filelink
 
