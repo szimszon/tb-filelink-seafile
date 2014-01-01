@@ -10,19 +10,20 @@ function onLoadProvider(provider) {
                             .createInstance(Components.interfaces.nsIMessenger);
 
   let repoName = document.getElementById("repo-name");
-  repoName.textContent = provider.repoName;
+  repoName.textContent = provider.serviceURL;
   let fileSpaceUsed = document.getElementById("file-space-used");
   fileSpaceUsed.textContent = messenger.formatFileSize(provider.fileSpaceUsed);
   let fileSpaceUsedSwatch = document.getElementById("file-space-used-swatch");
   fileSpaceUsedSwatch.style.backgroundColor = pv.Colors.category20.values[0];
 
   let remainingFileSpace = document.getElementById("remaining-file-space");
-  remainingFileSpace.textContent = messenger.formatFileSize(
+  remainingFileSpace.textContent = provider.remainingFileSpace < 0 ? unknownSize : messenger.formatFileSize(
     provider.remainingFileSpace);
   let remainingFileSpaceSwatch = document.getElementById("remaining-file-space-swatch");
   remainingFileSpaceSwatch.style.backgroundColor = pv.Colors.category20.values[1];
-
+  
   let totalSpace = provider.fileSpaceUsed + provider.remainingFileSpace;
+  
   let pieScale = 2 * Math.PI / totalSpace;
 
   let spaceDiv = document.getElementById("provider-space-visuals");

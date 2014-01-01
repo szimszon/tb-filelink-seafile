@@ -36,14 +36,12 @@ nsSeaFile.prototype = {
 
   get type() "SeaFile",
   get displayName() "SeaFile",
-  get serviceURL() "https://seafile.oregpreshaz.eu",
+  get serviceURL() gServerUrl + " - " + this._repoName,
   get iconClass() "chrome://cloudfile-seafile/skin/seafile_16.png",
   get accountKey() this._accountKey,
   get lastError() this._lastErrorText,
   get settingsURL() "chrome://cloudfile-seafile/content/settings.xhtml",
   get managementURL() "chrome://cloudfile-seafile/content/management.xhtml",
-  get repoName() this._repoName,
-  get repoId() this._repoId,
 
   _accountKey: false,
   _prefBranch: null,
@@ -715,10 +713,10 @@ nsSeaFile.prototype = {
    */
   get fileUploadSizeLimit() this._maxFileSize,
 
-  get remainingFileSpace() this._availableStorage,
+  get remainingFileSpace() (this._availableStorage-this._fileSpaceUsed),
 
   get fileSpaceUsed() this._fileSpaceUsed,
-
+  
   /**
    * Attempts to delete an uploaded file.
    *
