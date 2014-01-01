@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+   - You can obtain one at http://mozilla.org/MPL/2.0/.
+   - Edited by Szabolcs Gyuris (szimszon at oregpreshaz dot eu) -->
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+
+    <em:id>cloudfile-seafile@oregpreshaz.eu</em:id>
+    <em:version>0.1</em:version>
+    <em:type>2</em:type>
+
+    <!-- Target Application this extension can install into,
+         with minimum and maximum supported versions. -->
+    <em:targetApplication>
+      <Description>
+        <!-- Thunderbird -->
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>14.0</em:minVersion>
+        <em:maxVersion>24.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <!-- Front End MetaData -->
+    <em:name>SeaFile for Filelink</em:name>
+    <em:description>Adds the possibility to use a SeaFile store for Filelink</em:description>
+    <em:creator>Szabolcs Gyuris</em:creator>
+    <em:homepageURL>http://oregpreshaz.eu/</em:homepageURL>
+    <em:contributor></em:contributor>
+    <em:iconURL>chrome://cloudfile-seafile/skin/seafile_32.png</em:iconURL>
+<!--
+    <em:localized>
+      <Description>
+        <em:locale>de</em:locale>
+        <em:name>SeaFile für Filelink</em:name>
+        <em:description>Ermöglicht es, ein SeaFile Dienst für Filelink zu verwenden</em:description>
+        <em:translator>Philipp Kewisch</em:translator>
+      </Description>
+    </em:localized>
+    <em:localized>
+      <Description>
+        <em:locale>es-ES</em:locale>
+        <em:name>SeaFile para Filelink</em:name>
+        <em:description>Añade la posibilidad de usar una tienda de SeaFile para FileLink</em:description>
+      </Description>
+    </em:localized>
+-->
+  </Description>
+</RDF>

@@ -1,0 +1,7 @@
+content cloudfile-seafile chrome/content/
+locale cloudfile-seafile en-US chrome/locales/en-US/
+skin cloudfile-seafile classic/1.0 chrome/skin/
+
+component {57c44a6d-2ffd-4554-8a57-a592f8361176} components/nsSeaFile.js
+contract @mozilla.org/mail/cloudfile-seafile;1 {57c44a6d-2ffd-4554-8a57-a592f8361176}
+category cloud-files SeaFile @mozilla.org/mail/cloudfile-seafile;1
