@@ -1,7 +1,7 @@
 SeaFile for Filelink in Thunderbird
 ===================================
 
-Adds the possibility to use a SeaFile store for Filelink
+Adds the possibility to use a SeaFile store for Filelink.
 
 This is a highly experimental extension for thunderbird. It is based heavily on YouSendIt implementation (http://mxr.mozilla.org/comm-central/source/mail/components/cloudfile/nsYouSendIt.js).
 
@@ -16,3 +16,5 @@ Name the directory: cloudfile-seafile@oregpreshaz.eu
 Please help fork and contribute. (I'm not an experienced TB Add-on developer)
 
 Thank you!
+
+SeaFile is a Next-generation Open Source Cloud Storage see here: http://seafile.com/en/home/
