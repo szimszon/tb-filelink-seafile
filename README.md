@@ -1,6 +1,8 @@
 SeaFile for Filelink in Thunderbird
 ===================================
 
+Not a product from SeaFile.com!
+
 SeaFile is a Next-generation Open Source Cloud Storage see here: http://seafile.com/en/home/
 
 Adds the possibility to use a SeaFile store for Filelink.
@@ -31,6 +33,11 @@ You need a SeaFile server with an account and a not encrypted library with read-
 
 The add-on creates a directory in the library with the name "/apps/mozilla_thunderbird".
 All files go to this directory.
+
+Contact
+-------
+
+* Szabolcs Gyuris <cloudfile-seafile@oregpreshaz.eu>
 
 Known issuses
 -------------
