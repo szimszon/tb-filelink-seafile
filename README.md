@@ -10,7 +10,9 @@ This is a highly experimental extension for thunderbird. It is based heavily on 
 Install
 -------
 
-For now you can only get the code:
+Go to the http://store.oregpreshaz.eu/seafile_for_filelink/ site and download the xpi. Than install it in Thunderbird.
+
+Or grab the code:
 
 https://github.com/szimszon/tb-filelink-seafile/archive/master.zip
 
@@ -29,3 +31,10 @@ You need a SeaFile server with an account and a not encrypted library with read-
 
 The add-on creates a directory in the library with the name "/apps/mozilla_thunderbird".
 All files go to this directory.
+
+Known issuses
+-------------
+
+* upload file with the some filename multiple times results in "some file name (1)..." "some file name (2)..." in the library but Thunderbird always get the original file's download link
+* if you ask thunderbird to convert the attachements from local to SeaFile file by file than you could end up some files uploaded multiple times and Thunderbird will place some files link's multiple times. Workaround is to add all required attachements to the letter. Select all and then convert all to SeaFile in one step
+
