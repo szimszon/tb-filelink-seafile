@@ -100,9 +100,9 @@ nsSeaFile.prototype = {
    * @param aCallback called if folder is ready.
    */
   _initFolder: function nsSeaFile__initFolder(aCallback) {
-    this.log.info('_initFolder');
+    this.log.debug('_initFolder');
     let saveFolderName = function(aFolderName) {
-        this.log.info('saveFolderName');
+        this.log.debug('saveFolderName('+aFolderName+')');
         this._folderName = "/apps/mozilla_thunderbird";
         if (aCallback)
           aCallback();
@@ -140,12 +140,12 @@ nsSeaFile.prototype = {
   _uploaderCallback: function nsSeaFile__uploaderCallback(aRequestObserver,
                                                             aStatus) {
     aRequestObserver.onStopRequest(null, null, aStatus);
-
+    this.log.debug('_uploaderCallback(...,'+aStatus+')');
     this._uploadingFile = null;
     this._uploads.shift();
     if (this._uploads.length > 0) {
       let nextUpload = this._uploads[0];
-      this.log.info("chaining upload, file = " + nextUpload.file.leafName);
+      this.log.info("_uploaderCallback: chaining upload, file = " + nextUpload.file.leafName);
       this._uploadingFile = nextUpload.file;
       this._uploader = nextUpload;
       try {
@@ -171,11 +171,11 @@ nsSeaFile.prototype = {
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
-    this.log.info("Preparing to upload a file");
+    this.log.debug("uploadFile("+aFile.leafName+"):Preparing to upload a file");
 
     // if we're uploading a file, queue this request.
     if (this._uploadingFile && this._uploadingFile != aFile) {
-      this.log.info("Adding file to queue");
+      this.log.info("Adding file ["+aFile.leafName+"] to queue");
       let uploader = new nsSeaFileFileUploader(this, aFile,
                                                  this._uploaderCallback
                                                      .bind(this),
@@ -188,7 +188,7 @@ nsSeaFile.prototype = {
     this._urlListener = aCallback;
 
     let finish = function() {
-      this.log.info("Call _finishUpload("+aFile+")")
+      this.log.debug("Call _finishUpload("+aFile.leafName+")");
       this._finishUpload(aFile, aCallback);
     }.bind(this);
 
@@ -201,7 +201,7 @@ nsSeaFile.prototype = {
                                       Ci.nsIMsgCloudFileProvider.authErr);
     }.bind(this);
 
-    this.log.info("Checking to see if we're logged in");
+    this.log.debug("Checking to see if we're logged in");
     
     if (!this._loggedIn) {
       let onLoginSuccess = function() {
@@ -227,7 +227,7 @@ nsSeaFile.prototype = {
    *                  states of the upload procedure.
    */
   _finishUpload: function nsSeaFile__finishUpload(aFile, aCallback) {
-	this.log.info("_finishUpload("+aFile+")");
+	this.log.debug("_finishUpload("+aFile.leafName+")");
     /**if (aFile.fileSize > 2147483648)
       return this._fileExceedsLimit(aCallback, '2GB', 0);
     if (aFile.fileSize > this._maxFileSize)
@@ -239,7 +239,7 @@ nsSeaFile.prototype = {
     delete this._userInfo; // force us to update userInfo on every upload.
 
     if (!this._uploader) {
-      this.log.info("_finishUpload: add uploader")
+      this.log.debug("_finishUpload: add uploader");
       this._uploader = new nsSeaFileFileUploader(this, aFile,
                                                    this._uploaderCallback
                                                        .bind(this),
@@ -248,7 +248,7 @@ nsSeaFile.prototype = {
     }
 
     this._uploadingFile = aFile;
-    this.log.info("_finishUpload: startUpload()")
+    this.log.debug("_finishUpload: startUpload()");
     this._uploader.startUpload();
   },
 
@@ -279,7 +279,7 @@ nsSeaFile.prototype = {
    * @param aFile the nsILocalFile being uploaded.
    */
   cancelFileUpload: function nsSeaFile_cancelFileUpload(aFile) {
-    this.log.info("in cancel upload");
+    this.log.info("cancelFileUpload("+aFile.leafName+"): in cancel upload");
     if (this._uploadingFile != null && this._uploader != null && 
         this._uploadingFile.equals(aFile)) {
       this._uploader.cancel();
@@ -304,16 +304,16 @@ nsSeaFile.prototype = {
    */
   _handleStaleToken: function nsSeaFile__handleStaleToken(aSuccessCallback,
                                                             aFailureCallback) {
-    this.log.info("Handling a stale token.");
+    this.log.debug("_handleStaleToken: Handling a stale token.");
     this._loggedIn = false;
     this._cachedAuthToken = "";
     if (this.getPassword(this._userName, true) != "") {
-      this.log.info("Attempting to reauth with saved password");
+      this.log.debug("_handleStaleToken: Attempting to reauth with saved password");
       // We had a stored password - let's try logging in with that now.
       this.logon(aSuccessCallback, aFailureCallback,
                  false);
     } else {
-      this.log.info("No saved password stored, so we can't refresh the token silently.");
+      this.log.debug("_handleStaleToken: No saved password stored, so we can't refresh the token silently.");
       aFailureCallback();
     }
   },
@@ -322,9 +322,9 @@ nsSeaFile.prototype = {
    * A private function for retreiving the selected repo-id
    */
   _getRepoId: function nsSeafile_getRepoId(successCallback,failureCallback) {
-	  this.log.info("library id now: ["+this._repoId+"]");
+	  this.log.debug("_getRepoId: library id now: ["+this._repoId+"]");
 	  if (this._repoId!="") return ;
-	  this.log.info("getting library id");
+	  this.log.debug("_getRepoId: getting library id");
 
 	    let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
 	                .createInstance(Ci.nsIXMLHttpRequest);
@@ -332,14 +332,14 @@ nsSeaFile.prototype = {
 
 	    req.onload = function() {
 	      if (req.status >= 200 && req.status < 400) {
-	        this.log.info("request status = " + req.status +
+	        this.log.debug("_getRepoId: request status = " + req.status +
 	                      " response = " + req.responseText);
 	        let docResponse = JSON.parse(req.responseText);
-	        this.log.info("libraray list response parsed = " + docResponse);
+	        this.log.debug("_getRepoId: library list response parsed = " + docResponse);
 	        for (x in docResponse) {
 	          if ( docResponse[x].name == this._repoName ) {
 	            this._repoId = docResponse[x].id;
-	            this.log.info("library id: ["+this._repoId+"]")
+	            this.log.debug("_getRepoId: library id: ["+this._repoId+"]");
 	            break;
 	          }
 	        }
@@ -351,11 +351,11 @@ nsSeaFile.prototype = {
 	      }
 	      else
 	      {
-	        this.log.info("error status = " + req.status);
+	        this.log.debug("_getRepoId: error status = " + req.status);
 
 	        if (docResponse.detail=="Invalid token") {
 	          // Our token has gone stale
-	          this.log.info("Our token has gone stale - requesting a new one.");
+	          this.log.debug("_getRepoId: Our token has gone stale - requesting a new one.");
 
 	          let retryGetRepoId = function() {
 	            this._getRepoId(successCallback, failureCallback);
@@ -372,7 +372,7 @@ nsSeaFile.prototype = {
 	    }.bind(this);
 
 	    req.onerror = function() {
-	      this.log.info("libraray info failed - status = " + req.status);
+	      this.log.debug("_getRepoId: library info failed - status = " + req.status);
 	      if (failureCallback){
 	            failureCallback();
 	          }
@@ -395,8 +395,7 @@ nsSeaFile.prototype = {
    */
   _getUserInfo: function nsSeaFile_userInfo(successCallback, failureCallback) {
     this._getRepoId(successCallback,failureCallback);
-    this.log.info("repoId: "+this._repoId);
-	this.log.info("getting user info");
+	this.log.debug("_getUserInfo: getting user info");
 
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
@@ -404,10 +403,10 @@ nsSeaFile.prototype = {
 
     req.onload = function() {
       if (req.status >= 200 && req.status < 400) {
-        this.log.info("request status = " + req.status +
+        this.log.debug("_getUserInfo: request status = " + req.status +
                       " response = " + req.responseText);
         let docResponse = JSON.parse(req.responseText);
-        this.log.info("user info response parsed = " + docResponse);
+        this.log.debug("_getUserInfo: user info response parsed = " + docResponse);
         this._userInfo = docResponse;
         let account = docResponse.email;
         this._fileSpaceUsed = docResponse.usage;
@@ -415,16 +414,16 @@ nsSeaFile.prototype = {
         	this._availableStorage = -1;
         }
         else this._availableStorage = docResponse.total;
-        this.log.info("available storage = " + this._availableStorage);
+        this.log.debug("_getUserInfo: available storage = " + this._availableStorage);
         successCallback();
       }
       else
       {
-        this.log.info("error status = " + req.status);
+        this.log.debug("_getUserInfo: error status = " + req.status);
 
         if (docResponse.detail=="Invalid token") {
           // Our token has gone stale
-          this.log.info("Our token has gone stale - requesting a new one.");
+          this.log.debug("_getUserInfo: Our token has gone stale - requesting a new one.");
 
           let retryGetUserInfo = function() {
             this._getUserInfo(successCallback, failureCallback);
@@ -440,7 +439,7 @@ nsSeaFile.prototype = {
     }.bind(this);
 
     req.onerror = function() {
-      this.log.info("getUserInfo failed - status = " + req.status);
+      this.log.debug("_getUserInfo: getUserInfo failed - status = " + req.status);
       failureCallback();
     }.bind(this);
     // Add a space at the end because http logging looks for two
@@ -487,7 +486,7 @@ nsSeaFile.prototype = {
 
     // If we're not logged in, attempt to login, and then attempt to
     // get user info if logging in is successful.
-    this.log.info("Checking to see if we're logged in");
+    this.log.debug("refreshUserInfo: Checking to see if we're logged in");
     if (!this._loggedIn) {
       let onLoginSuccess = function() {
         this._getUserInfo(onGetUserInfoSuccess, onAuthFailure);
@@ -525,7 +524,7 @@ nsSeaFile.prototype = {
     req.onload = function() {
       if (req.status >= 200 &&
           req.status < 400) {
-        this.log.info("request status = " + req + " response = " +
+        this.log.debug("request status = " + req + " response = " +
                       req.responseText);
         aRequestObserver.onStopRequest(null, null, Cr.NS_OK);
       }
@@ -538,7 +537,7 @@ nsSeaFile.prototype = {
     }.bind(this);
 
     req.onerror = function() {
-      this.log.info("getUserInfo failed - status = " + req.status);
+      this.log.debug("getUserInfo failed - status = " + req.status);
       aRequestObserver.onStopRequest(null, null, Cr.NS_ERROR_FAILURE);
     }.bind(this);
     // Add a space at the end because http logging looks for two
@@ -566,7 +565,7 @@ nsSeaFile.prototype = {
     this._getRepoId();
     let pfolder=aParentFolderName;
     if (pfolder=="") pfolder="/";
-    this.log.info("Find folder: [" + pfolder+"/"+aFolderName+"]");
+    this.log.debug("_findFolder("+aFolderName+","+aParentFolderName+")");
     if (Services.io.offline)
         throw Ci.nsIMsgCloudFileProvider.offlineErr;
     let args = "?p=" + pfolder;
@@ -580,13 +579,13 @@ nsSeaFile.prototype = {
         let docResponse = JSON.parse(req.responseText);
         let folderFound=false;
         if (req.status >= 200 && req.status < 400) {
-          this.log.info("request status = " + req + " response = " +
+          this.log.debug("_findFolder: request status = " + req + " response = " +
                         req.responseText);
           for ( let x in docResponse ){
             if ( docResponse[x].name == aFolderName ){
-              this.log.info("find folder: "+aFolderName);
+              this.log.debug("_findFolder: find folder: "+aFolderName);
               if ( docResponse[x].type != 'dir' ){
-                this.log.info("find folder: "+aFolderName+" not a dir");
+                this.log.debug("_findFolder: find folder: "+aFolderName+" not a dir");
                 this._lastErrorText = aFolderName+" not a directory!";
                 this._lastErrorStatus = 500;
               }
@@ -604,11 +603,13 @@ nsSeaFile.prototype = {
         else {
           this._lastErrorText = docResponse.details;
           this._lastErrorStatus = req.status;
+          this.log.debug("_findFolder: error: "+this._lastErrorText+
+                         ", "+this.lastErrorStatus);
         }
     }.bind(this);
 
     req.onerror = function() {
-        this.log.info("findFolder failed - status = " + req.status);
+        this.log.debug("_findFolder: findFolder failed - status = " + req.status);
     }.bind(this);
       // Add a space at the end because http logging looks for two
       // spaces in the X-Auth-Token header to avoid putting passwords
@@ -630,8 +631,9 @@ nsSeaFile.prototype = {
   _createFolder: function nsSeaFile__createFolder(aName,
                                                     aParent,
                                                     aSuccessCallback) {
+    this.log.debug("_createFolder("+aName+","+aParent+")");
     if (aParent[aParent.lenght-1]!="/") aParent+="/";
-	this.log.info("Create folder: [" + aParent+aName+"]");
+	
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
@@ -646,7 +648,7 @@ nsSeaFile.prototype = {
     req.onload = function() {
       let docResponse = req.responseText
       if (req.status >= 200 && req.status < 400) {
-        this.log.info("request status = " + req + " response = " +
+        this.log.debug("_createFolder: request status = " + req + " response = " +
                       req.responseText);
 
         if (aSuccessCallback)
@@ -659,7 +661,7 @@ nsSeaFile.prototype = {
     }.bind(this);
 
     req.onerror = function() {
-      this.log.info("createFolder failed - status = " + req.status);
+      this.log.debug("_createFolder: createFolder failed - status = " + req.status);
     }.bind(this);
     // Add a space at the end because http logging looks for two
     // spaces in the X-Auth-Token header to avoid putting passwords
@@ -706,7 +708,7 @@ nsSeaFile.prototype = {
    * there's a url we can load in a content tab that will allow the user
    * to create an account.
    */
-  get createNewAccountUrl() "",
+  get createNewAccountUrl() gServerUrl,
 
   /**
    * If we don't know the limit, this will return -1.
@@ -725,7 +727,7 @@ nsSeaFile.prototype = {
    *                  states of the delete procedure.
    */
   deleteFile: function nsSeaFile_deleteFile(aFile, aCallback) {
-    this.log.info("Deleting a file");
+    this.log.debug("deleteFile("+aFile.leafName+"): Deleting a file");
 
     if (Services.io.offline) {
       this.log.error("We're offline - we can't delete the file.");
@@ -734,7 +736,7 @@ nsSeaFile.prototype = {
 
     let uploadInfo = this._uploadInfo[aFile.path];
     if (!uploadInfo) {
-      this.log.error("Could not find a record for the file to be deleted.");
+      this.log.error("deleteFile: Could not find a record for the file ["+aFile.leafName+"] to be deleted.");
       throw Cr.NS_ERROR_FAILURE;
     }
 
@@ -745,32 +747,32 @@ nsSeaFile.prototype = {
                aFile.leafName;
 
     req.open("DELETE", gServerUrl + args, true);
-    this.log.info("Sending delete request to: " + gServerUrl + args);
+    this.log.debug("deleteFile: Sending delete request to: " + gServerUrl + args);
 
     req.onerror = function() {    
       let response = JSON.parse(req.responseText);
       this._lastErrorStatus = req.status;
       this._lastErrorText = response.detail;
-      this.log.error("There was a problem deleting: " + this._lastErrorText);
+      this.log.error("deleteFile: There was a problem deleting a file ["+aFile.leafName+"]: " + this._lastErrorText);
       aCallback.onStopRequest(null, null, Cr.NS_ERROR_FAILURE);
     }.bind(this);
 
     req.onload = function() {
       // Response is the URL.
       let response = req.responseText;
-      this.log.info("delete response = " + response);
+      this.log.debug("deleteFile: delete response = " + response);
       let deleteInfo = JSON.parse(response);
 
       if ( req.status >= 200 && req.status < 400 ) {
-        this.log.info("Delete was successful!");
+        this.log.debug("deleteFile: Delete was successful! ["+aFile.leafName+"]");
         // Success!
         aCallback.onStopRequest(null, null, Cr.NS_OK);
       }
       else
       {
-        this.log.error("Server has returned a failure on our delete request.");
-        this.log.error("Error code: " + req.status);
-        this.log.error("Error message: " + deleteInfo.detail);
+        this.log.error("deleteFile: Server has returned a failure on our delete request.");
+        this.log.error("deleteFile: Error code: " + req.status);
+        this.log.error("deleteFile: Error message: " + deleteInfo.detail);
         //aCallback.onStopRequest(null, null,
         //                        Ci.nsIMsgCloudFileProvider.uploadErr);
         return;
@@ -792,10 +794,10 @@ nsSeaFile.prototype = {
    *                  returns the empty string if no password exists.
    */
   getPassword: function nsSeaFile_getPassword(aUsername, aNoPrompt) {
-    this.log.info("Getting password for user: " + aUsername);
+    this.log.debug("getPassword("+aUsername+"): Getting password for user");
 
     if (aNoPrompt)
-      this.log.info("Suppressing password prompt");
+      this.log.debug("getPassword: Suppressing password prompt");
 
     let passwordURI = gServerUrl;
     let logins = Services.logins.findLogins({}, passwordURI, null, passwordURI);
@@ -850,27 +852,27 @@ nsSeaFile.prototype = {
    *                 if no auth token is currently stored.
    */
   logon: function nsSeaFile_login(successCallback, failureCallback, aWithUI) {
-    this.log.info("Logging in, aWithUI = " + aWithUI);
+    this.log.debug("logon: Logging in, aWithUI = " + aWithUI);
     if (this._password == undefined || !this._password)
       this._password = this.getPassword(this._userName, !aWithUI);
-    this.log.info("Sending login information...");
+    this.log.debug("logon: Sending login information...");
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
     let curDate = Date.now().toString();
 
     req.open("POST", gServerUrl + kAuthPath, true);
     req.onerror = function() {
-      this.log.info("logon failure");
+      this.log.debug("logon: logon failure");
       failureCallback();
     }.bind(this);
 
     req.onload = function() {
       if (req.status >= 200 && req.status < 400) {
-        this.log.info("auth token response = " + req.responseText);
+        this.log.debug("logon: auth token response = " + req.responseText);
         let docResponse = JSON.parse(req.responseText);
-        this.log.info("login response parsed = " + docResponse);
+        this.log.debug("logon: login response parsed = " + docResponse);
         this._cachedAuthToken = docResponse.token;
-        this.log.info("authToken = " + this._cachedAuthToken);
+        this.log.debug("logon: authToken = " + this._cachedAuthToken);
         if (this._cachedAuthToken) {
           this._loggedIn = true;
         }
@@ -879,6 +881,8 @@ nsSeaFile.prototype = {
           this._loggedIn = false;
           this._lastErrorText = docResponse.detail;
           this._lastErrorStatus = req.status;
+          this.log.error("logon: error - "+this._lastErrorText+", "+
+        		  this._lastErrorStatus);
           failureCallback();
         }
       }
@@ -890,7 +894,7 @@ nsSeaFile.prototype = {
     req.setRequestHeader("Accept", "application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.send("username="+this._userName+"&password="+this._password);
-    this.log.info("Login information sent!");
+    this.log.debug("Login information sent!");
     this._getRepoId(successCallback,failureCallback);
     successCallback();
   },
@@ -922,7 +926,7 @@ function nsSeaFileFileUploader(aSeaFile, aFile, aCallback,
   this._repoId = this.seaFile._repoId;
   this._folderName = this.seaFile._folderName;
   this._cachedAuthToken = this.seaFile._cachedAuthToken;
-  this.log.info("new nsSeaFileFileUploader file = " + aFile.leafName);
+  this.log.debug("nsSeaFileFileUploader(" + aFile.leafName+")");
   this.file = aFile;
   this.callback = aCallback;
   this.requestObserver = aRequestObserver;
@@ -938,6 +942,7 @@ nsSeaFileFileUploader.prototype = {
    * Kicks off the upload procedure for this uploader.
    */
   startUpload: function nsSFU_startUpload() {
+	this.log.debug('startUpload');
     let curDate = Date.now().toString();
 
     this.requestObserver.onStartRequest(null, null);
@@ -962,6 +967,7 @@ nsSeaFileFileUploader.prototype = {
    */
   _prepareToSend: function nsSFU__prepareToSend(successCallback,
                                                   failureCallback) {
+	this.log.debug("_prepareToSend");
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
 
@@ -974,13 +980,13 @@ nsSeaFileFileUploader.prototype = {
       if (req.status >= 200 && req.status < 400) {
         this._urlInfo = JSON.parse(response);
         this.seaFile._uploadInfo[this.file.path] = this._urlInfo;
-        this.log.info("in prepare to send response = " + response);
-        this.log.info("upload url = " + this._urlInfo);
+        this.log.debug("_prepareToSend: in prepare to send response = " + response);
+        this.log.debug("_prepareToSend: upload url = " + this._urlInfo);
         successCallback();
       }
       else {
-        this.log.error("Preparing to send failed!");
-        this.log.error("Response was: " + response);
+        this.log.error("_prepareToSend: Preparing to send failed!");
+        this.log.error("_prepareToSend: Response was: " + response);
         this.seaFile._lastErrorText = req.responseText;
         this.seaFile._lastErrorStatus = req.status;
         failureCallback();
@@ -1003,24 +1009,27 @@ nsSeaFileFileUploader.prototype = {
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
 
-    this.log.info("_uploadFile");
+    this.log.debug("_uploadFile: "+this.file.leafName);
     let curDate = Date.now().toString();
-    this.log.info("upload url = " + this._urlInfo);
+    this.log.debug("_uploadFile("+this.file.leafName+"): upload url = " + this._urlInfo);
     this.request = req;
     req.open("POST", this._urlInfo, true);
     req.onload = function() {
       this.cleanupTempFile();
       if (req.status >= 200 && req.status < 400) {
         try {
-          this.log.info("upload response = " + req.responseText);
-          this._commitSend();
+          this.log.debug("_uploadFile("+this.file.leafName+"): upload response = " + req.responseText);
+          this._getSharedLink();
         } catch (ex) {
           this.log.error(ex);
         }
       }
       else
+      {
+    	this.log.error("_uploadFile("+this.file.leafName+"): error - "+req.responseText);
         this.callback(this.requestObserver,
                       Ci.nsIMsgCloudFileProvider.uploadErr);
+      }
     }.bind(this);
 
     req.onerror = function () {
@@ -1107,14 +1116,14 @@ nsSeaFileFileUploader.prototype = {
    * Cancels the upload request for the file associated with this Uploader.
    */
   cancel: function nsSFU_cancel() {
-    this.log.info("in uploader cancel");
+    this.log.debug("cancel("+this.file.leafName+"): in uploader cancel");
     this.callback(this.requestObserver, Ci.nsIMsgCloudFileProvider.uploadCanceled);
     delete this.callback;
     if (this.request) {
-      this.log.info("cancelling upload request");
+      this.log.debug("cancel("+this.file.leafName+"): cancelling upload request");
       let req = this.request;
       if (req.channel) {
-        this.log.info("cancelling upload channel");
+        this.log.debug("cancel("+this.file.leafName+"): cancelling upload channel");
         req.channel.cancel(Cr.NS_BINDING_ABORTED);
       }
       this.request = null;
@@ -1122,17 +1131,17 @@ nsSeaFileFileUploader.prototype = {
   },
   /**
    * Once the file is uploaded, if we want to get a sharing URL back, we have
-   * to send a "commit" request - which this function does.
+   * to query it.
    */
-  _commitSend: function nsSFU__commitSend() {
-    this.log.info("commit sending file " + this._urlInfo.fileId);
+  _getSharedLink: function nsSFU__getSharedLink() {
+    this.log.debug("_getSharedLink("+this.file.leafName+"): get shared link");
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
 
     req.open("PUT", gServerUrl + kRepoPath + this._repoId+"/file/shared-link/", true);
 
     req.onerror = function() {
-      this.log.info("error in commit send");
+      this.log.debug("_getSharedLink("+this.file.leafName+"): error in query");
       this.callback(this.requestObserver,
                     Ci.nsIMsgCloudFileProvider.uploadErr);
     }.bind(this);
@@ -1141,10 +1150,11 @@ nsSeaFileFileUploader.prototype = {
     req.onload = function() {
       if (req.status >= 200 && req.status < 400) {
         let response = req.getResponseHeader('Location');
-        this.log.info("commit response = " + response);
+        this.log.debug("_getSharedLink("+this.file.leafName+"): commit response = " + response);
         uploadInfo = response;
       }
       let succeed = function() {
+        this.log.debug("_getSharedLink("+this.file.leafName+"): signal success.");
         this.callback(this.requestObserver, Cr.NS_OK);
       }.bind(this);
 
@@ -1157,6 +1167,8 @@ nsSeaFileFileUploader.prototype = {
       if (uploadInfo=="") {
         this.seaFile._lastErrorText = req.responseText;
         this.seaFile._lastErrorStatus = req.status;
+        this.log.error("_getSharedLink("+this.file.leafName+"): error - "+this.seaFile._lastErrorText+", "+
+        		this.seaFile._lastErrorStatus);
         failed();
       }
       else {

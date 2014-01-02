@@ -1,5 +1,7 @@
 content cloudfile-seafile chrome/content/
 locale cloudfile-seafile en-US chrome/locales/en-US/
+locale cloudfile-seafile hu-HU chrome/locales/hu/
+locale cloudfile-seafile en chrome/locales/hu/
 skin cloudfile-seafile classic/1.0 chrome/skin/
 
 component {57c44a6d-2ffd-4554-8a57-a592f8361176} components/nsSeaFile.js

@@ -5,10 +5,13 @@
  * Edited by Szabolcs Gyuris (szimszon at oregpreshaz dot eu)
  */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 function onLoadProvider(provider) {
   let messenger = Components.classes["@mozilla.org/messenger;1"]
                             .createInstance(Components.interfaces.nsIMessenger);
-
+  let bundle = Services.strings.createBundle("chrome://messenger/locale/messenger.properties");
+  let unknownSize = bundle.GetStringFromName("attachmentSizeUnknown");
   let repoName = document.getElementById("repo-name");
   repoName.textContent = provider.serviceURL;
   let fileSpaceUsed = document.getElementById("file-space-used");

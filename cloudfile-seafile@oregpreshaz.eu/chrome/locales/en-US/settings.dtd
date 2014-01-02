@@ -6,4 +6,4 @@
 <!ENTITY SeaFileSettings.baseURL "Service Location (e.g. https://seafile.example.com/)">
 <!ENTITY SeaFileSettings.username "Username">
 <!ENTITY SeaFileSettings.library "Library">
-<!ENTITY SeaFileSettings.description "The service location is the URL used for uploading attachments, with all subfolders. The public location specifies the location where the files are publicly reachable. If not specified, the service location will be used instead.">
+<!ENTITY SeaFileSettings.description "Use a library without encryption. Files will be uploaded under /apps/mozilla_thunderbird directory in the library.">

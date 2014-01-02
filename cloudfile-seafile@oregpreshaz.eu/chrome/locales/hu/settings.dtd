@@ -1,0 +1,9 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   - Edited by Szabolcs Gyuris (szimszon at oregpreshaz dot eu) -->
+
+<!ENTITY SeaFileSettings.baseURL "SeaFile szerver URL (pl.: https://seafile.example.com/)">
+<!ENTITY SeaFileSettings.username "Felhasználói név">
+<!ENTITY SeaFileSettings.library "Kötet">
+<!ENTITY SeaFileSettings.description "Olyan Kötetet kell megadni ami nem titkosított. A kötet főkönyvárába a /apps/mozilla_thunderbird könyvtár alá kerülnek a feltöltött fájlok.">
