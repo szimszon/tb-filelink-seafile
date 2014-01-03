@@ -42,6 +42,6 @@ Contact
 Known issuses
 -------------
 
-* upload file with the some filename multiple times results in "some file name (1)..." "some file name (2)..." in the library but Thunderbird always get the original file's download link
+* upload file with the same filename multiple times results in "same file name (1)..." "same file name (2)..." in the library but Thunderbird always get the original file's download link
 * if you ask thunderbird to convert the attachements from local to SeaFile file by file than you could end up some files uploaded multiple times and Thunderbird will place some files link's multiple times. Workaround is to add all required attachements to the letter. Select all and then convert all to SeaFile in one step
 
