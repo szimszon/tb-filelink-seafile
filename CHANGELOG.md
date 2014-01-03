@@ -1,6 +1,10 @@
+0.5 - 2014.01.03
+================
+* update url in install.rdf
+
 0.4 - 2014.01.03
 ================
-*  do not uri encode filename at all (still can't upload, but at least it throw an error)
+* do not uri encode filename at all (still can't upload, but at least it throw an error)
 
 0.3 - 2014.01.03
 ================
