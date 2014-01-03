@@ -1051,10 +1051,10 @@ nsSeaFileFileUploader.prototype = {
     let contentType = "multipart/form-data; boundary="+ boundary;
     req.setRequestHeader("Content-Type", contentType);
 
-    let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
-        ? this.file.leafName 
-        : encodeURIComponent(this.file.leafName);
-
+    //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
+    //    ? this.file.leafName 
+    //    : encodeURIComponent(this.file.leafName);
+    let fileName = this.file.leafName;
     let fileContents = "--" + boundary +
       "\r\nContent-Disposition: form-data; name=\"parent_dir\"\r\n\r\n"+
       this.folderName+"\r\n"+
@@ -1186,7 +1186,11 @@ nsSeaFileFileUploader.prototype = {
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    req.send("p="+this.folderName+"/"+this.file.leafName);
+    //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
+    //              ? this.file.leafName 
+    //              : encodeURIComponent(this.file.leafName);
+    let fileName = this.file.leafName;
+    req.send("p="+this.folderName+"/"+fileName);
   },
 
   /**
