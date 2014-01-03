@@ -91,6 +91,7 @@ nsSeaFile.prototype = {
     gServerUrl = this._prefBranch.getCharPref("baseURL");
     this._repoName = this._prefBranch.getCharPref("library");
     this._loggedIn = this._cachedAuthToken != "";
+    this._folderName = "/apps/mozilla_thunderbird";
   },
 
   /**
@@ -167,16 +168,18 @@ nsSeaFile.prototype = {
    * @param aCallback an nsIRequestObserver for monitoring the start and
    *                  stop states of the upload procedure.
    */
-  uploadFile: function nsSeaFile_uploadFile(aFile, aCallback) {
+  uploadFile: function nsSeaFile_uploadFile( aFile, aCallback) {
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
-    this.log.debug("uploadFile("+aFile.leafName+"):Preparing to upload a file");
+    this.log.debug("uploadFile("+this._folderName+","+aFile.leafName+"):Preparing to upload a file");
 
     // if we're uploading a file, queue this request.
     if (this._uploadingFile && this._uploadingFile != aFile) {
-      this.log.info("Adding file ["+aFile.leafName+"] to queue");
-      let uploader = new nsSeaFileFileUploader(this, aFile,
+      this.log.info("Adding file ["+this._folderName+"/"+aFile.leafName+"] to queue");
+      let uploader = new nsSeaFileFileUploader(this, 
+                                                 this._folderName,
+                                                 aFile,
                                                  this._uploaderCallback
                                                      .bind(this),
                                                  aCallback);
@@ -188,8 +191,8 @@ nsSeaFile.prototype = {
     this._urlListener = aCallback;
 
     let finish = function() {
-      this.log.debug("Call _finishUpload("+aFile.leafName+")");
-      this._finishUpload(aFile, aCallback);
+      this.log.debug("Call _finishUpload("+this._folderName+","+aFile.leafName+")");
+      this._finishUpload(this._folderName,aFile, aCallback);
     }.bind(this);
 
     let onGetUserInfoSuccess = function() {
@@ -226,8 +229,8 @@ nsSeaFile.prototype = {
    * @param aCallback the nsIRequestObserver for monitoring the start and stop
    *                  states of the upload procedure.
    */
-  _finishUpload: function nsSeaFile__finishUpload(aFile, aCallback) {
-	this.log.debug("_finishUpload("+aFile.leafName+")");
+  _finishUpload: function nsSeaFile__finishUpload(aFolderName,aFile, aCallback) {
+	this.log.debug("_finishUpload("+aFolderName+"/"+aFile.leafName+")");
     /**if (aFile.fileSize > 2147483648)
       return this._fileExceedsLimit(aCallback, '2GB', 0);
     if (aFile.fileSize > this._maxFileSize)
@@ -240,7 +243,9 @@ nsSeaFile.prototype = {
 
     if (!this._uploader) {
       this.log.debug("_finishUpload: add uploader");
-      this._uploader = new nsSeaFileFileUploader(this, aFile,
+      this._uploader = new nsSeaFileFileUploader(this, 
+                                                 aFolderName,
+                                                 aFile,
                                                    this._uploaderCallback
                                                        .bind(this),
                                                    aCallback);
@@ -594,7 +599,7 @@ nsSeaFile.prototype = {
                 folderFound=true;
                 if (aFoundCallback)
                 	if ( pfolder[pfolder.lenght-1]!="/") pfolder+="/";
-                	aFoundCallback(pfolder+aFolderName)
+                	aFoundCallback(pfolder+aFolderName);
               }
             }
           }
@@ -919,14 +924,14 @@ nsSeaFile.prototype = {
   },
 };
 
-function nsSeaFileFileUploader(aSeaFile, aFile, aCallback,
+function nsSeaFileFileUploader(aSeaFile, aFolderName, aFile, aCallback,
                                  aRequestObserver) {
   this.seaFile = aSeaFile;
   this.log = this.seaFile.log;
   this._repoId = this.seaFile._repoId;
-  this._folderName = this.seaFile._folderName;
+  this.folderName = aFolderName;
   this._cachedAuthToken = this.seaFile._cachedAuthToken;
-  this.log.debug("nsSeaFileFileUploader(" + aFile.leafName+")");
+  this.log.debug("nsSeaFileFileUploader(" +this.folderName + "," + aFile.leafName + ")");
   this.file = aFile;
   this.callback = aCallback;
   this.requestObserver = aRequestObserver;
@@ -935,6 +940,7 @@ function nsSeaFileFileUploader(aSeaFile, aFile, aCallback,
 nsSeaFileFileUploader.prototype = {
   seaFile : null,
   file : null,
+  folderName : null,
   callback : null,
   _request : null,
 
@@ -942,7 +948,7 @@ nsSeaFileFileUploader.prototype = {
    * Kicks off the upload procedure for this uploader.
    */
   startUpload: function nsSFU_startUpload() {
-	this.log.debug('startUpload');
+	this.log.debug('startUpload('+this.folderName+','+this.file.leafName+')');
     let curDate = Date.now().toString();
 
     this.requestObserver.onStartRequest(null, null);
@@ -1011,7 +1017,7 @@ nsSeaFileFileUploader.prototype = {
 
     this.log.debug("_uploadFile: "+this.file.leafName);
     let curDate = Date.now().toString();
-    this.log.debug("_uploadFile("+this.file.leafName+"): upload url = " + this._urlInfo);
+    this.log.debug("_uploadFile("+this.file.leafName+"): ("+this.folderName+") upload url = " + this._urlInfo);
     this.request = req;
     req.open("POST", this._urlInfo, true);
     req.onload = function() {
@@ -1051,7 +1057,7 @@ nsSeaFileFileUploader.prototype = {
 
     let fileContents = "--" + boundary +
       "\r\nContent-Disposition: form-data; name=\"parent_dir\"\r\n\r\n"+
-      this._folderName+"\r\n"+
+      this.folderName+"\r\n"+
       "--"+boundary+
       '\r\nContent-Disposition: form-data; name="file"; filename="'+
       fileName+'"\r\n'+
@@ -1180,7 +1186,7 @@ nsSeaFileFileUploader.prototype = {
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    req.send("p="+this._folderName+"/"+this.file.leafName);
+    req.send("p="+this.folderName+"/"+this.file.leafName);
   },
 
   /**
