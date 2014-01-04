@@ -1,3 +1,9 @@
+0.6 - 2014.01.04
+================
+
+* fix for internationale characters in filename [unescape(encodeURIComponent(fileName))]
+  - http://andre.arko.net/2012/09/18/force-encoding-in-javascript/
+
 0.5 - 2014.01.03
 ================
 * update url in install.rdf

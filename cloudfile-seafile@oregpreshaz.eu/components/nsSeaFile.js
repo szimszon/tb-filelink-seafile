@@ -673,7 +673,7 @@ nsSeaFile.prototype = {
     // in the log, and crashes if there aren't two spaces.
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
-    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
     req.send("operation=mkdir");
   },
 
@@ -897,7 +897,7 @@ nsSeaFile.prototype = {
       }
     }.bind(this);
     req.setRequestHeader("Accept", "application/json");
-    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
     req.send("username="+this._userName+"&password="+this._password);
     this.log.debug("Login information sent!");
     this._getRepoId(successCallback,failureCallback);
@@ -1049,7 +1049,7 @@ nsSeaFileFileUploader.prototype = {
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     let boundary = "------" + curDate;
     let contentType = "multipart/form-data; boundary="+ boundary;
-    req.setRequestHeader("Content-Type", contentType);
+    req.setRequestHeader("Content-Type", contentType+"; charset=utf-8");
 
     //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
     //    ? this.file.leafName 
@@ -1060,7 +1060,7 @@ nsSeaFileFileUploader.prototype = {
       this.folderName+"\r\n"+
       "--"+boundary+
       '\r\nContent-Disposition: form-data; name="file"; filename="'+
-      fileName+'"\r\n'+
+      unescape(encodeURIComponent(fileName))+'"\r\n'+
       "Content-Type: application/octet-stream" +
       "\r\n\r\n";
 
@@ -1185,7 +1185,7 @@ nsSeaFileFileUploader.prototype = {
 
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
-    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
     //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
     //              ? this.file.leafName 
     //              : encodeURIComponent(this.file.leafName);
