@@ -25,7 +25,7 @@ var kUserInfoPath = "api2/account/info/";
 var kRepoPath = "api2/repos/";
 
 function nsSeaFile() {
-  this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");	
+  this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");  
 }
 
 nsSeaFile.prototype = {
@@ -111,7 +111,7 @@ nsSeaFile.prototype = {
       
     let createThunderbirdFolder = function(aParentFolderName) {
       this._createFolder("mozilla_thunderbird", aParentFolderName,
-    		  saveFolderName);
+          saveFolderName);
     }.bind(this);
 
     let createAppsFolder = function(aParentFolderName) {
@@ -230,7 +230,7 @@ nsSeaFile.prototype = {
    *                  states of the upload procedure.
    */
   _finishUpload: function nsSeaFile__finishUpload(aFolderName,aFile, aCallback) {
-	this.log.debug("_finishUpload("+aFolderName+"/"+aFile.leafName+")");
+  this.log.debug("_finishUpload("+aFolderName+"/"+aFile.leafName+")");
     /**if (aFile.fileSize > 2147483648)
       return this._fileExceedsLimit(aCallback, '2GB', 0);
     if (aFile.fileSize > this._maxFileSize)
@@ -327,67 +327,69 @@ nsSeaFile.prototype = {
    * A private function for retreiving the selected repo-id
    */
   _getRepoId: function nsSeafile_getRepoId(successCallback,failureCallback) {
-	  this.log.debug("_getRepoId: library id now: ["+this._repoId+"]");
-	  if (this._repoId!="") return ;
-	  this.log.debug("_getRepoId: getting library id");
+    this.log.debug("_getRepoId: library id now: ["+this._repoId+"]");
+    if (this._repoId!="") return ;
+    this.log.debug("_getRepoId: getting library id");
 
-	    let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
-	                .createInstance(Ci.nsIXMLHttpRequest);
-	    req.open("GET", gServerUrl + kRepoPath, false);
+      let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+                  .createInstance(Ci.nsIXMLHttpRequest);
+      req.open("GET", gServerUrl + kRepoPath, false);
 
-	    req.onload = function() {
-	      if (req.status >= 200 && req.status < 400) {
-	        this.log.debug("_getRepoId: request status = " + req.status +
-	                      " response = " + req.responseText);
-	        let docResponse = JSON.parse(req.responseText);
-	        this.log.debug("_getRepoId: library list response parsed = " + docResponse);
-	        for (x in docResponse) {
-	          if ( docResponse[x].name == this._repoName ) {
-	            this._repoId = docResponse[x].id;
-	            this.log.debug("_getRepoId: library id: ["+this._repoId+"]");
-	            break;
-	          }
-	        }
-	        if ( this._repoId == "" ){
-	          if (failureCallback){
-	            failureCallback();
-	          }
-	        }
-	      }
-	      else
-	      {
-	        this.log.debug("_getRepoId: error status = " + req.status);
+      req.onload = function() {
+        let docResponse = JSON.parse(req.responseText);
+        this.log.debug("_getRepoId: library list response parsed = " + docResponse);
+        if (req.status >= 200 && req.status < 400) {
+          this.log.debug("_getRepoId: request status = " + req.status +
+                        " response = " + req.responseText);
+          for (x in docResponse) {
+            if ( docResponse[x].name == this._repoName ) {
+              this._repoId = docResponse[x].id;
+              this.log.debug("_getRepoId: library id: ["+this._repoId+"]");
+              break;
+            }
+          }
+          if ( this._repoId == "" ){
+                  let errormsg="_getRepoId: Can't find repository: "+this._repoName;
+                  this.log.error(errormsg);
+                  this._lastErrorText=errormsg;
+                  if (failureCallback){
+                    failureCallback();
+                  }
+          }
+        }
+        else
+        {
+          this.log.debug("_getRepoId: error status = " + req.status);
 
-	        if (docResponse.detail=="Invalid token") {
-	          // Our token has gone stale
-	          this.log.debug("_getRepoId: Our token has gone stale - requesting a new one.");
+          if (docResponse.detail=="Invalid token") {
+            // Our token has gone stale
+            this.log.debug("_getRepoId: Our token has gone stale - requesting a new one.");
 
-	          let retryGetRepoId = function() {
-	            this._getRepoId(successCallback, failureCallback);
-	          }.bind(this);
+            let retryGetRepoId = function() {
+              this._getRepoId(successCallback, failureCallback);
+            }.bind(this);
 
-	          this._handleStaleToken(retryGetRepoId, failureCallback);
-	          return;
-	        }
-	          if (failureCallback){
-	            failureCallback();
-	          }
-	          return;
-	        }
-	    }.bind(this);
+            this._handleStaleToken(retryGetRepoId, failureCallback);
+            return;
+          }
+            if (failureCallback){
+              failureCallback();
+            }
+        }
+      }.bind(this);
 
-	    req.onerror = function() {
-	      this.log.debug("_getRepoId: library info failed - status = " + req.status);
-	      if (failureCallback){
-	            failureCallback();
-	          }
-	    }.bind(this);
-	    // Add a space at the end because http logging looks for two
-	    // spaces in the X-Auth-Token header to avoid putting passwords
-	    // in the log, and crashes if there aren't two spaces.
-	    req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
-	    req.setRequestHeader("Accept", "application/json");
-	    req.send();
+      req.onerror = function() {
+        this.log.error("_getRepoId: library info failed - status = " + req.status);
+        if (failureCallback){
+              failureCallback();
+            }
+      }.bind(this);
+      // Add a space at the end because http logging looks for two
+      // spaces in the X-Auth-Token header to avoid putting passwords
+      // in the log, and crashes if there aren't two spaces.
+      req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
+      req.setRequestHeader("Accept", "application/json");
+      req.send();
   },
   
   /**
@@ -399,8 +401,12 @@ nsSeaFile.prototype = {
    *                        fails.
    */
   _getUserInfo: function nsSeaFile_userInfo(successCallback, failureCallback) {
-    this._getRepoId(successCallback,failureCallback);
-	this.log.debug("_getUserInfo: getting user info");
+    this._getRepoId();
+    if ( this._repoId == "" ) {
+      failureCallback();
+      return;
+    }
+    this.log.debug("_getUserInfo: getting user info");
 
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
@@ -416,7 +422,7 @@ nsSeaFile.prototype = {
         let account = docResponse.email;
         this._fileSpaceUsed = docResponse.usage;
         if ( docResponse.total < 0 ) {
-        	this._availableStorage = -1;
+          this._availableStorage = -1;
         }
         else this._availableStorage = docResponse.total;
         this.log.debug("_getUserInfo: available storage = " + this._availableStorage);
@@ -428,7 +434,7 @@ nsSeaFile.prototype = {
 
         if (docResponse.detail=="Invalid token") {
           // Our token has gone stale
-          this.log.debug("_getUserInfo: Our token has gone stale - requesting a new one.");
+          this.log.error("_getUserInfo: Our token has gone stale - requesting a new one.");
 
           let retryGetUserInfo = function() {
             this._getUserInfo(successCallback, failureCallback);
@@ -444,7 +450,7 @@ nsSeaFile.prototype = {
     }.bind(this);
 
     req.onerror = function() {
-      this.log.debug("_getUserInfo: getUserInfo failed - status = " + req.status);
+      this.log.error("_getUserInfo: getUserInfo failed - status = " + req.status);
       failureCallback();
     }.bind(this);
     // Add a space at the end because http logging looks for two
@@ -598,8 +604,8 @@ nsSeaFile.prototype = {
               {
                 folderFound=true;
                 if (aFoundCallback)
-                	if ( pfolder[pfolder.lenght-1]!="/") pfolder+="/";
-                	aFoundCallback(pfolder+aFolderName);
+                  if ( pfolder[pfolder.lenght-1]!="/") pfolder+="/";
+                  aFoundCallback(pfolder+aFolderName);
               }
             }
           }
@@ -638,7 +644,7 @@ nsSeaFile.prototype = {
                                                     aSuccessCallback) {
     this.log.debug("_createFolder("+aName+","+aParent+")");
     if (aParent[aParent.lenght-1]!="/") aParent+="/";
-	
+  
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
@@ -880,6 +886,20 @@ nsSeaFile.prototype = {
         this.log.debug("logon: authToken = " + this._cachedAuthToken);
         if (this._cachedAuthToken) {
           this._loggedIn = true;
+          this._getRepoId();
+          if ( this._repoId == "" ) {
+            this.clearPassword();
+            this._loggedIn = false;
+            this._lastErrorText = this._repoName+" library not found.";
+            this._lastErrorStatus = req.status;
+            this.log.error("logon: error - "+this._lastErrorText+", "+
+                          this._lastErrorStatus);
+            failureCallback();
+          }
+          else
+          {
+             successCallback();
+          }
         }
         else {
           this.clearPassword();
@@ -887,7 +907,7 @@ nsSeaFile.prototype = {
           this._lastErrorText = docResponse.detail;
           this._lastErrorStatus = req.status;
           this.log.error("logon: error - "+this._lastErrorText+", "+
-        		  this._lastErrorStatus);
+              this._lastErrorStatus);
           failureCallback();
         }
       }
@@ -900,8 +920,6 @@ nsSeaFile.prototype = {
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
     req.send("username="+this._userName+"&password="+this._password);
     this.log.debug("Login information sent!");
-    this._getRepoId(successCallback,failureCallback);
-    successCallback();
   },
 
   get _cachedAuthToken() {
@@ -948,7 +966,7 @@ nsSeaFileFileUploader.prototype = {
    * Kicks off the upload procedure for this uploader.
    */
   startUpload: function nsSFU_startUpload() {
-	this.log.debug('startUpload('+this.folderName+','+this.file.leafName+')');
+  this.log.debug('startUpload('+this.folderName+','+this.file.leafName+')');
     let curDate = Date.now().toString();
 
     this.requestObserver.onStartRequest(null, null);
@@ -973,7 +991,7 @@ nsSeaFileFileUploader.prototype = {
    */
   _prepareToSend: function nsSFU__prepareToSend(successCallback,
                                                   failureCallback) {
-	this.log.debug("_prepareToSend");
+  this.log.debug("_prepareToSend");
     let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
                 .createInstance(Ci.nsIXMLHttpRequest);
 
@@ -1032,7 +1050,7 @@ nsSeaFileFileUploader.prototype = {
       }
       else
       {
-    	this.log.error("_uploadFile("+this.file.leafName+"): error - "+req.responseText);
+      this.log.error("_uploadFile("+this.file.leafName+"): error - "+req.responseText);
         this.callback(this.requestObserver,
                       Ci.nsIMsgCloudFileProvider.uploadErr);
       }
@@ -1174,7 +1192,7 @@ nsSeaFileFileUploader.prototype = {
         this.seaFile._lastErrorText = req.responseText;
         this.seaFile._lastErrorStatus = req.status;
         this.log.error("_getSharedLink("+this.file.leafName+"): error - "+this.seaFile._lastErrorText+", "+
-        		this.seaFile._lastErrorStatus);
+        this.seaFile._lastErrorStatus);
         failed();
       }
       else {
