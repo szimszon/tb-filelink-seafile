@@ -1,4 +1,5 @@
 0.8 - 2014.01.10
+================
 
 * Ability to create library if doesn't exist
 
