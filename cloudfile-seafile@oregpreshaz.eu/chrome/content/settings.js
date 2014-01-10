@@ -12,9 +12,11 @@ function extraArgs() {
     baseURL += "/";
   }
   var libraryValue = document.getElementById("library").value.trim();
+  var libraryCreate = document.getElementById("create_lib_if_not_found").checked;
   return {
     "baseURL": { type: "char", value: baseURL },
     "username": { type: "char", value: usernameValue },
     "library": { type: "char", value: libraryValue },
+    "libraryCreate": { type: "bool", value: libraryCreate },
   };  
 }

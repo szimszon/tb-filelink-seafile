@@ -6,4 +6,5 @@
 <!ENTITY SeaFileSettings.baseURL "Service Location (e.g. https://seafile.example.com/)">
 <!ENTITY SeaFileSettings.username "Username">
 <!ENTITY SeaFileSettings.library "Library">
+<!ENTITY SeaFileSettings.create_lib_if_not_found "Create library if not found?">
 <!ENTITY SeaFileSettings.description "Use a library without encryption. Files will be uploaded under /apps/mozilla_thunderbird directory in the library.">

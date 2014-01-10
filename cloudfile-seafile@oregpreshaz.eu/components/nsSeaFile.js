@@ -51,6 +51,7 @@ nsSeaFile.prototype = {
   _userInfo: null,
   _repoId: "",
   _repoName: "",
+  _libraryCreate: "",
   _file : null,
   _folderName: "",
   _requestDate: null,
@@ -90,6 +91,13 @@ nsSeaFile.prototype = {
     this._userName = this._prefBranch.getCharPref("username");
     gServerUrl = this._prefBranch.getCharPref("baseURL");
     this._repoName = this._prefBranch.getCharPref("library");
+    try {
+      this._libraryCreate = this._prefBranch.getBoolPref("libraryCreate");
+    } 
+    catch (e) {
+      this._libraryCreate = false;
+      this._prefBranch.setBoolPref("libraryCreate", false);
+    }
     this._loggedIn = this._cachedAuthToken != "";
     this._folderName = "/apps/mozilla_thunderbird";
   },
@@ -326,6 +334,72 @@ nsSeaFile.prototype = {
   /**
    * A private function for retreiving the selected repo-id
    */
+  _createRepo: function nsSeafile_createRepo(repoName,successCallback,failureCallback) {
+    this.log.debug("_createRepo("+repoName+")");
+    let req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+                  .createInstance(Ci.nsIXMLHttpRequest);
+    req.open("POST", gServerUrl + kRepoPath, false);
+
+    req.onload = function() {
+        let docResponse = JSON.parse(req.responseText);
+        this.log.debug("_createRepo: create library response parsed = " + docResponse);
+        if (req.status >= 200 && req.status < 400) {
+          this.log.debug("_createRepo: request status = " + req.status +
+                        " response = " + req.responseText);
+          if ( docResponse.repo_name != repoName || docResponse.repo_id == "") {  
+                  let errormsg="_createRepo: Can't create library. Expected name: ["+repoName+"], got: ["+docResponse.repo_name+"], ["+docResponse.repo_id+"]";
+                  this.log.error(errormsg);
+                  this._lastErrorText=errormsg;
+                  if (failureCallback){
+                    failureCallback();
+                  }
+          }
+          else
+          {
+            this.log.debug("_createRepo: library created: ["+docResponse.repo_name+"]["+docResponse.repo_id+"]");
+            this._repoId=docResponse.repo_id;
+          }
+        }
+        else
+        {
+          this.log.debug("_createRepo: error status = " + req.status);
+
+          if (docResponse.detail=="Invalid token") {
+            // Our token has gone stale
+            this.log.debug("_createRepo: Our token has gone stale - requesting a new one.");
+
+            let retryCreateRepo = function() {
+              this._createRepo(successCallback, failureCallback);
+            }.bind(this);
+
+            this._handleStaleToken(retryCreateRepo, failureCallback);
+            return;
+          }
+            if (failureCallback){
+              failureCallback();
+            }
+        }
+      }.bind(this);
+
+      req.onerror = function() {
+        this.log.error("_createRepo: create library failed - status = " + req.status);
+        if (failureCallback){
+              failureCallback();
+            }
+      }.bind(this);
+      // Add a space at the end because http logging looks for two
+      // spaces in the X-Auth-Token header to avoid putting passwords
+      // in the log, and crashes if there aren't two spaces.
+      req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
+      req.setRequestHeader("Accept", "application/json");
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+      let repoDesc="Thunderbird Filelink";
+      req.send("name="+repoName+"&desc="+repoDesc);
+  },
+  
+  /**
+   * A private function for retreiving the selected repo-id
+   */
   _getRepoId: function nsSeafile_getRepoId(successCallback,failureCallback) {
     this.log.debug("_getRepoId: library id now: ["+this._repoId+"]");
     if (this._repoId!="") return ;
@@ -347,6 +421,9 @@ nsSeaFile.prototype = {
               this.log.debug("_getRepoId: library id: ["+this._repoId+"]");
               break;
             }
+          }
+          if ( this._repoId == "" && this._libraryCreate ) {
+            this._createRepo(this._repoName,successCallback,failureCallback);
           }
           if ( this._repoId == "" ){
                   let errormsg="_getRepoId: Can't find repository: "+this._repoName;
