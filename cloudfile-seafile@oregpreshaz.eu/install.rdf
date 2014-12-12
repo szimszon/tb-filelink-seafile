@@ -39,5 +39,13 @@
         <em:translator>Gyuris Szabolcs</em:translator>
       </Description>
     </em:localized>
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>SeaFile pour Filelink</em:name>
+        <em:description>Permet d'utiliser SeaFile dans Filelink<</em:description>
+        <em:translator>T0mab</em:translator>
+      </Description>
+    </em:localized>
   </Description>
 </RDF>
