@@ -1,5 +1,7 @@
 content cloudfile-seafile chrome/content/
 locale cloudfile-seafile en-US chrome/locales/en-US/
+locale cloudfile-seafile fr-FR chrome/locales/fr-FR/
+locale cloudfile-seafile fr chrome/locales/fr-FR/
 locale cloudfile-seafile hu-HU chrome/locales/hu/
 locale cloudfile-seafile en chrome/locales/hu/
 skin cloudfile-seafile classic/1.0 chrome/skin/

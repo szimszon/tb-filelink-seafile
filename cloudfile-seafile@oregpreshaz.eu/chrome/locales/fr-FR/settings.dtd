@@ -1,0 +1,10 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   - Edited by T0mab (thomas.baguet at gmail dot com) -->
+
+<!ENTITY SeaFileSettings.baseURL "Adresse du service (par exemple: https://seafile.site.com/)">
+<!ENTITY SeaFileSettings.username "Utilisateur">
+<!ENTITY SeaFileSettings.library "Bibliothèque">
+<!ENTITY SeaFileSettings.create_lib_if_not_found "Créer la bibliothèque si non trouvée ?">
+<!ENTITY SeaFileSettings.description "Utiliser une bibliothèque sans chiffrement. Les fichiers seront envoyés dans /apps/mozilla_thunderbird dans la bibliothèque.">
