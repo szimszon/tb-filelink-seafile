@@ -1,3 +1,9 @@
+0.10 - 2014.12.14
+=================
+
+* Add french language in locales - Thomas Baguet
+* Use encodeURIComponent when sending login name and password
+
 0.9 - 2014.07.26
 ================
 

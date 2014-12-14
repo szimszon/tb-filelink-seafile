@@ -9,7 +9,7 @@
   <Description about="urn:mozilla:install-manifest">
 
     <em:id>cloudfile-seafile@oregpreshaz.eu</em:id>
-    <em:version>0.9</em:version>
+    <em:version>0.10</em:version>
     <em:type>2</em:type>
 
     <!-- Target Application this extension can install into,
@@ -43,7 +43,7 @@
       <Description>
         <em:locale>fr</em:locale>
         <em:name>SeaFile pour Filelink</em:name>
-        <em:description>Permet d'utiliser SeaFile dans Filelink<</em:description>
+        <em:description>Permet d'utiliser SeaFile dans Filelink</em:description>
         <em:translator>T0mab</em:translator>
       </Description>
     </em:localized>

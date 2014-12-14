@@ -995,7 +995,7 @@ nsSeaFile.prototype = {
     }.bind(this);
     req.setRequestHeader("Accept", "application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-    req.send("username="+this._userName+"&password="+this._password);
+    req.send("username="+encodeURIComponent(this._userName)+"&password="+encodeURIComponent(this._password));
     this.log.debug("Login information sent!");
   },
 
