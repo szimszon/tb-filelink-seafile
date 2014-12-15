@@ -8,8 +8,8 @@
  * nsIMsgCloudFileProvider interface.
  * This code is based of a YouSendIt implementation:
  *   http://mxr.mozilla.org/comm-central/source/mail/components/cloudfile/nsYouSendIt.js
- * 
- * Edited by Szabolcs Gyuris (szimszon at oregpreshaz dot eu) 
+ *
+ * Edited by Szabolcs Gyuris (szimszon at oregpreshaz dot eu)
  */
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
@@ -25,7 +25,7 @@ var kUserInfoPath = "api2/account/info/";
 var kRepoPath = "api2/repos/";
 
 function nsSeaFile() {
-  this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");  
+  this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");
 }
 
 nsSeaFile.prototype = {
@@ -93,7 +93,7 @@ nsSeaFile.prototype = {
     this._repoName = this._prefBranch.getCharPref("library");
     try {
       this._libraryCreate = this._prefBranch.getBoolPref("libraryCreate");
-    } 
+    }
     catch (e) {
       this._libraryCreate = false;
       this._prefBranch.setBoolPref("libraryCreate", false);
@@ -116,7 +116,7 @@ nsSeaFile.prototype = {
         if (aCallback)
           aCallback();
     }.bind(this);
-      
+
     let createThunderbirdFolder = function(aParentFolderName) {
       this._createFolder("mozilla_thunderbird", aParentFolderName,
           saveFolderName);
@@ -185,7 +185,7 @@ nsSeaFile.prototype = {
     // if we're uploading a file, queue this request.
     if (this._uploadingFile && this._uploadingFile != aFile) {
       this.log.info("Adding file ["+this._folderName+"/"+aFile.leafName+"] to queue");
-      let uploader = new nsSeaFileFileUploader(this, 
+      let uploader = new nsSeaFileFileUploader(this,
                                                  this._folderName,
                                                  aFile,
                                                  this._uploaderCallback
@@ -213,7 +213,7 @@ nsSeaFile.prototype = {
     }.bind(this);
 
     this.log.debug("Checking to see if we're logged in");
-    
+
     if (!this._loggedIn) {
       let onLoginSuccess = function() {
         this._getUserInfo(onGetUserInfoSuccess, onAuthFailure);
@@ -244,14 +244,14 @@ nsSeaFile.prototype = {
     if (aFile.fileSize > this._maxFileSize)
       return this._fileExceedsLimit(aCallback, 'Limit', 0);
     if (aFile.fileSize > this._availableStorage)
-      return this._fileExceedsLimit(aCallback, 'Quota', 
+      return this._fileExceedsLimit(aCallback, 'Quota',
                                     aFile.fileSize + this._fileSpaceUsed);
     */
     delete this._userInfo; // force us to update userInfo on every upload.
 
     if (!this._uploader) {
       this.log.debug("_finishUpload: add uploader");
-      this._uploader = new nsSeaFileFileUploader(this, 
+      this._uploader = new nsSeaFileFileUploader(this,
                                                  aFolderName,
                                                  aFile,
                                                    this._uploaderCallback
@@ -293,7 +293,7 @@ nsSeaFile.prototype = {
    */
   cancelFileUpload: function nsSeaFile_cancelFileUpload(aFile) {
     this.log.info("cancelFileUpload("+aFile.leafName+"): in cancel upload");
-    if (this._uploadingFile != null && this._uploader != null && 
+    if (this._uploadingFile != null && this._uploader != null &&
         this._uploadingFile.equals(aFile)) {
       this._uploader.cancel();
     }
@@ -346,7 +346,7 @@ nsSeaFile.prototype = {
         if (req.status >= 200 && req.status < 400) {
           this.log.debug("_createRepo: request status = " + req.status +
                         " response = " + req.responseText);
-          if ( docResponse.repo_name != repoName || docResponse.repo_id == "") {  
+          if ( docResponse.repo_name != repoName || docResponse.repo_id == "") {
                   let errormsg="_createRepo: Can't create library. Expected name: ["+repoName+"], got: ["+docResponse.repo_name+"], ["+docResponse.repo_id+"]";
                   this.log.error(errormsg);
                   this._lastErrorText=errormsg;
@@ -396,7 +396,7 @@ nsSeaFile.prototype = {
       let repoDesc="Thunderbird Filelink";
       req.send("name="+repoName+"&desc="+repoDesc);
   },
-  
+
   /**
    * A private function for retreiving the selected repo-id
    */
@@ -468,7 +468,7 @@ nsSeaFile.prototype = {
       req.setRequestHeader("Accept", "application/json");
       req.send();
   },
-  
+
   /**
    * A private function for retrieving profile information about a user.
    *
@@ -649,7 +649,7 @@ nsSeaFile.prototype = {
                                                 aParentFolderName,
                                                 aNotFoundCallback,
                                                 aFoundCallback) {
-    
+
     this._getRepoId();
     let pfolder=aParentFolderName;
     if (pfolder=="") pfolder="/";
@@ -705,7 +705,7 @@ nsSeaFile.prototype = {
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
     req.send();
-    
+
   },
 
 
@@ -721,7 +721,7 @@ nsSeaFile.prototype = {
                                                     aSuccessCallback) {
     this.log.debug("_createFolder("+aName+","+aParent+")");
     if (aParent[aParent.lenght-1]!="/") aParent+="/";
-  
+
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
@@ -806,7 +806,7 @@ nsSeaFile.prototype = {
   get remainingFileSpace() (this._availableStorage-this._fileSpaceUsed),
 
   get fileSpaceUsed() this._fileSpaceUsed,
-  
+
   /**
    * Attempts to delete an uploaded file.
    *
@@ -837,7 +837,7 @@ nsSeaFile.prototype = {
     req.open("DELETE", gServerUrl + args, true);
     this.log.debug("deleteFile: Sending delete request to: " + gServerUrl + args);
 
-    req.onerror = function() {    
+    req.onerror = function() {
       let response = JSON.parse(req.responseText);
       this._lastErrorStatus = req.status;
       this._lastErrorText = response.detail;
@@ -920,7 +920,7 @@ nsSeaFile.prototype = {
 
     return "";
   },
- 
+
   /**
    * Clears any saved SeaFile passwords for this instance's account.
    */
@@ -1146,8 +1146,8 @@ nsSeaFileFileUploader.prototype = {
     let contentType = "multipart/form-data; boundary="+ boundary;
     req.setRequestHeader("Content-Type", contentType+"; charset=utf-8");
 
-    //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
-    //    ? this.file.leafName 
+    //let fileName = /^[\040-\176]+$/.test(this.file.leafName)
+    //    ? this.file.leafName
     //    : encodeURIComponent(this.file.leafName);
     let fileName = this.file.leafName;
     let fileContents = "--" + boundary +
@@ -1246,7 +1246,7 @@ nsSeaFileFileUploader.prototype = {
       this.callback(this.requestObserver,
                     Ci.nsIMsgCloudFileProvider.uploadErr);
     }.bind(this);
-    
+
     let uploadInfo="";
     req.onload = function() {
       if (req.status >= 200 && req.status < 400) {
@@ -1260,7 +1260,7 @@ nsSeaFileFileUploader.prototype = {
       }.bind(this);
 
       let failed = function() {
-        this.callback(this.requestObserver, this.file.leafName.length > 120 
+        this.callback(this.requestObserver, this.file.leafName.length > 120
                       ? Ci.nsIMsgCloudFileProvider.uploadExceedsFileNameLimit
                       : Ci.nsIMsgCloudFileProvider.uploadErr);
       }.bind(this);
@@ -1281,8 +1281,8 @@ nsSeaFileFileUploader.prototype = {
     req.setRequestHeader("Authorization", "Token "+this._cachedAuthToken + " ");
     req.setRequestHeader("Accept", "application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-    //let fileName = /^[\040-\176]+$/.test(this.file.leafName) 
-    //              ? this.file.leafName 
+    //let fileName = /^[\040-\176]+$/.test(this.file.leafName)
+    //              ? this.file.leafName
     //              : encodeURIComponent(this.file.leafName);
     let fileName = this.file.leafName;
     req.send("p="+this.folderName+"/"+fileName);
