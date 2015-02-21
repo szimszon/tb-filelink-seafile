@@ -12,7 +12,7 @@ This is a highly experimental extension for thunderbird. It is based heavily on 
 Install
 -------
 
-Go to the http://store.oregpreshaz.eu/seafile_for_filelink/ site and download the xpi. Than install it in Thunderbird.
+Go to the http://bag.oregpreshaz.eu/seafile_for_filelink/ site and download the xpi. Than install it in Thunderbird.
 
 Or grab the code:
 
