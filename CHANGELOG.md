@@ -1,3 +1,8 @@
+0.10.1 - 2015.02.21
+===================
+
+* update url domain changed from store.oregpreshaz.eu to bag.oregpreshaz.eu because startssl policy
+
 0.10 - 2014.12.14
 =================
 
