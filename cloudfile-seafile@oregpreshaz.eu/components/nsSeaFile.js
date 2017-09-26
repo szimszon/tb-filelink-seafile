@@ -68,6 +68,8 @@ nsSeaFile.prototype = {
   _urlsForFiles : {},
   _uploadInfo : {},
   _uploads: [],
+  _expiry: 31,
+  _defaultExpiry: 31,
 
   /**
    * Used by our testing framework to override the URLs that this component
@@ -98,6 +100,27 @@ nsSeaFile.prototype = {
       this._libraryCreate = false;
       this._prefBranch.setBoolPref("libraryCreate", false);
     }
+
+    try {
+      _expiry = this._prefBranch.getIntPref("expiry");
+
+      if (isNaN(_expiry)) {
+        this._expiry = this._defaultExpiry;
+        this._prefBranch.setIntPref("expiry", this._defaultExpiry);
+      } else {
+        var x = parseFloat(_expiry);
+        if ((x | 0) === x && _expiry > 0 && _expiry < 366) {
+          this._expiry = _expiry;
+        } else {
+          this._expiry = this._defaultExpiry;
+          this._prefBranch.setIntPref("expiry", this._defaultExpiry);
+        }
+      }
+    }
+    catch (e) {
+      this._expiry = this._defaultExpiry;
+    }
+
     this._loggedIn = this._cachedAuthToken != "";
     this._folderName = "/apps/mozilla_thunderbird";
   },
@@ -1030,6 +1053,7 @@ function nsSeaFileFileUploader(aSeaFile, aFolderName, aFile, aCallback,
   this.file = aFile;
   this.callback = aCallback;
   this.requestObserver = aRequestObserver;
+  this._expiry = this.seaFile._expiry;
 }
 
 nsSeaFileFileUploader.prototype = {
@@ -1285,7 +1309,7 @@ nsSeaFileFileUploader.prototype = {
     //              ? this.file.leafName
     //              : encodeURIComponent(this.file.leafName);
     let fileName = this.file.leafName;
-    req.send("p="+this.folderName+"/"+fileName);
+    req.send("p="+this.folderName+"/"+fileName+"&expire="+this._expiry);
   },
 
   /**

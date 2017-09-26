@@ -8,6 +8,7 @@
 <!DOCTYPE html [
   <!ENTITY % htmlDTD PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd"> %htmlDTD;
   <!ENTITY % managementDTD SYSTEM "chrome://messenger/locale/cloudfile/management.dtd"> %managementDTD;
+  <!ENTITY % seafileDTD SYSTEM "chrome://cloudfile-seafile/locale/settings.dtd"> %seafileDTD;
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -26,6 +27,11 @@
       <div id="provider-name">
       <h1>SeaFile</h1>
       <h2 id="repo-name"></h2>
+      <div>
+        <label>&SeaFileSettings.defaultExpiry;</label>
+        <span id="default-expiry"/>
+        <span>&SeaFileSettings.defaultExpiryUnit;</span>
+      </div>
       </div>
     </div>
 

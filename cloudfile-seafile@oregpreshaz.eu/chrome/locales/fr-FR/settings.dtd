@@ -6,5 +6,8 @@
 <!ENTITY SeaFileSettings.baseURL "Adresse du service (par exemple: https://seafile.site.com/)">
 <!ENTITY SeaFileSettings.username "Utilisateur">
 <!ENTITY SeaFileSettings.library "Bibliothèque">
+<!ENTITY SeaFileSettings.expiry "Expiration des liens (1~365 jours)">
+<!ENTITY SeaFileSettings.defaultExpiry "Les liens expirent après">
+<!ENTITY SeaFileSettings.defaultExpiryUnit "jours">
 <!ENTITY SeaFileSettings.create_lib_if_not_found "Créer la bibliothèque si non trouvée ?">
 <!ENTITY SeaFileSettings.description "Utiliser une bibliothèque sans chiffrement. Les fichiers seront envoyés dans /apps/mozilla_thunderbird dans la bibliothèque.">

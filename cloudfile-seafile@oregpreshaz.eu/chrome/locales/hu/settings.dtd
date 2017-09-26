@@ -6,5 +6,8 @@
 <!ENTITY SeaFileSettings.baseURL "SeaFile szerver URL (pl.: https://seafile.example.com/)">
 <!ENTITY SeaFileSettings.username "Felhasználói név">
 <!ENTITY SeaFileSettings.library "Kötet">
+<!ENTITY SeaFileSettings.expiry "Expire links after (1~365 days)">
+<!ENTITY SeaFileSettings.defaultExpiry "Links will expire after">
+<!ENTITY SeaFileSettings.defaultExpiryUnit "days">
 <!ENTITY SeaFileSettings.create_lib_if_not_found "Létrehozza a kötetet ha nincs?">
 <!ENTITY SeaFileSettings.description "Olyan Kötetet kell megadni ami nem titkosított. A kötet főkönyvárába a /apps/mozilla_thunderbird könyvtár alá kerülnek a feltöltött fájlok.">
