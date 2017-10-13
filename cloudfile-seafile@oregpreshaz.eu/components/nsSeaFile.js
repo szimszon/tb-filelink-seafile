@@ -23,7 +23,7 @@ var gServerUrl = "";
 var kAuthPath = "api2/auth-token/";
 var kUserInfoPath = "api2/account/info/";
 var kRepoPath = "api2/repos/";
-var TS = Date.now();
+var TS;
 
 function nsSeaFile() {
   this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");
@@ -178,6 +178,7 @@ nsSeaFile.prototype = {
    *                  stop states of the upload procedure.
    */
   uploadFile: function nsSeaFile_uploadFile( aFile, aCallback) {
+    TS = Date.now();
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
