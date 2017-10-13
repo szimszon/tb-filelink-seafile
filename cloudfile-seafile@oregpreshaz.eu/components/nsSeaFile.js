@@ -23,6 +23,7 @@ var gServerUrl = "";
 var kAuthPath = "api2/auth-token/";
 var kUserInfoPath = "api2/account/info/";
 var kRepoPath = "api2/repos/";
+var TS;
 
 function nsSeaFile() {
   this.log = Log4Moz.getConfiguredLogger("SeaFile","DEBUG","DEBUG");
@@ -177,6 +178,7 @@ nsSeaFile.prototype = {
    *                  stop states of the upload procedure.
    */
   uploadFile: function nsSeaFile_uploadFile( aFile, aCallback) {
+    TS = Date.now();
     if (Services.io.offline)
       throw Ci.nsIMsgCloudFileProvider.offlineErr;
 
@@ -1149,7 +1151,7 @@ nsSeaFileFileUploader.prototype = {
     //let fileName = /^[\040-\176]+$/.test(this.file.leafName)
     //    ? this.file.leafName
     //    : encodeURIComponent(this.file.leafName);
-    let fileName = this.file.leafName;
+    let fileName = TS+'_'+this.file.leafName;
     let fileContents = "--" + boundary +
       "\r\nContent-Disposition: form-data; name=\"parent_dir\"\r\n\r\n"+
       this.folderName+"\r\n"+
@@ -1285,7 +1287,7 @@ nsSeaFileFileUploader.prototype = {
     //              ? this.file.leafName
     //              : encodeURIComponent(this.file.leafName);
     let fileName = this.file.leafName;
-    req.send("p="+this.folderName+"/"+fileName);
+    req.send("p="+this.folderName+"/"+TS+'_'+fileName);
   },
 
   /**
