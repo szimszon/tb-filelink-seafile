@@ -28,9 +28,14 @@
       <input id="library" type="text" required="true" value="ThunderbirdFilelink" />
 
       <label>&SeaFileSettings.description;</label>
-      
+
+      <label for="expiry">&SeaFileSettings.expiry;</label>
+      <input id="expiry" type="text" pattern="[1-9][0-9]*" required="true" value="31" />
+
       <label for="create_lib_if_not_found">&SeaFileSettings.create_lib_if_not_found;</label>
       <input id="create_lib_if_not_found" type="checkbox" checked="checked"/>
+
+      <br />
 
     </form>
   </body>

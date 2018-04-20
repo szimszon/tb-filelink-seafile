@@ -12,11 +12,13 @@ function extraArgs() {
     baseURL += "/";
   }
   var libraryValue = document.getElementById("library").value.trim();
+  var expiryValue = document.getElementById("expiry").value.trim();
   var libraryCreate = document.getElementById("create_lib_if_not_found").checked;
   return {
     "baseURL": { type: "char", value: baseURL },
     "username": { type: "char", value: usernameValue },
     "library": { type: "char", value: libraryValue },
+    "expiry": { type: "int", value: expiryValue },
     "libraryCreate": { type: "bool", value: libraryCreate },
   };  
 }

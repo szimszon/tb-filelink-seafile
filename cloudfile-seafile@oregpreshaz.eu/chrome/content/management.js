@@ -14,6 +14,12 @@ function onLoadProvider(provider) {
   let unknownSize = bundle.GetStringFromName("attachmentSizeUnknown");
   let repoName = document.getElementById("repo-name");
   repoName.textContent = provider.serviceURL;
+  let defaultExpiry = document.getElementById("default-expiry");
+
+  let _accountKey = provider.accountKey;
+  let _prefBranch = Services.prefs.getBranch("mail.cloud_files.accounts." + _accountKey + ".");
+  defaultExpiry.textContent = _prefBranch.getIntPref("expiry");
+
   let fileSpaceUsed = document.getElementById("file-space-used");
   fileSpaceUsed.textContent = messenger.formatFileSize(provider.fileSpaceUsed);
   let fileSpaceUsedSwatch = document.getElementById("file-space-used-swatch");
